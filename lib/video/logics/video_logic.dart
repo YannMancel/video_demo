@@ -8,13 +8,7 @@ abstract class VideoLogic extends StateNotifier<VideoState> {
 
   static String get kName => 'VideoLogic';
 
-  // TODO perhaps
-  //void addListener(VoidCallback listener);
-  //void removeListener(VoidCallback listener);
-
   double get aspectRatio;
-  Duration get duration;
-  Duration get position;
   bool get isInitialized;
   bool get isPlaying;
   bool get isMuted;
@@ -42,8 +36,13 @@ class VideoLogicImpl extends VideoLogic {
       final videoTimerLogic = reader(videoTimerRef.notifier);
       if (videoTimerLogic.mounted) {
         videoTimerLogic.state = VideoTimer(
-          position: position,
-          duration: duration,
+          /// The current playback position.
+          /// It is [Duration.zero] if the video hasn't been initialized.
+          position: isInitialized ? _controller.value.position : Duration.zero,
+
+          /// The total duration of the video.
+          /// It is [Duration.zero] if the video hasn't been initialized.
+          duration: _controller.value.duration,
         );
       }
     };
@@ -54,6 +53,9 @@ class VideoLogicImpl extends VideoLogic {
     _controller = VideoPlayerController.asset(assetPath)
       ..addListener(_listener);
 
+    // Initialize the video timer provider before the displaying
+    _listener();
+
     await _controller.initialize();
     state = const VideoState.initialized();
   }
@@ -62,20 +64,6 @@ class VideoLogicImpl extends VideoLogic {
 
   @override
   double get aspectRatio => _controller.value.aspectRatio;
-
-  /// The total duration of the video.
-  ///
-  /// The duration is [Duration.zero] if the video hasn't been initialized.
-  @override
-  Duration get duration => _controller.value.duration;
-
-  /// The current playback position.
-  ///
-  /// The duration is [Duration.zero] if the video hasn't been initialized.
-  @override
-  Duration get position {
-    return isInitialized ? _controller.value.position : Duration.zero;
-  }
 
   @override
   bool get isInitialized => _controller.value.isInitialized;
