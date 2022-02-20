@@ -16,3 +16,8 @@ final videoTimerRef = StateProvider.autoDispose<VideoTimer>(
   (_) => const VideoTimer(),
   name: 'videoTimerRef',
 );
+
+final isOpenedOverlay = StateProvider<bool>(
+  (_) => false,
+  name: 'isOpenedOverlay',
+);
