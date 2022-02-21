@@ -11,6 +11,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ProviderScope(
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Video Demo',
         theme: ThemeData(primarySwatch: Colors.blue),
         home: const HomePage(title: 'Video Player'),

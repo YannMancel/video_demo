@@ -1,5 +1,5 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart'
-    show StateNotifierProvider, StateProvider;
+    show Provider, StateNotifierProvider, StateProvider;
 import 'package:video_demo/_features.dart';
 
 final videoPlayerRef =
@@ -17,7 +17,12 @@ final videoTimerRef = StateProvider.autoDispose<VideoTimer>(
   name: 'videoTimerRef',
 );
 
-final isOpenedOverlay = StateProvider<bool>(
-  (_) => false,
+final isOpenedOverlay = StateProvider.autoDispose<bool>(
+  (_) => true,
   name: 'isOpenedOverlay',
+);
+
+final playPauseLogicRef = Provider.autoDispose<PlayPauseLogic>(
+  (ref) => PlayPauseLogicImpl(reader: ref.read),
+  name: PlayPauseLogic.kName,
 );

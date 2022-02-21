@@ -62,13 +62,18 @@ class _Overlay extends ConsumerWidget {
 }
 
 class ActionOverlay extends StatelessWidget {
-  const ActionOverlay({Key? key}) : super(key: key);
+  const ActionOverlay({
+    Key? key,
+    this.overlayOpacity = 0.4,
+  }) : super(key: key);
+
+  final double overlayOpacity;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox.expand(
       child: ColoredBox(
-        color: Colors.black.withOpacity(0.4),
+        color: Colors.black.withOpacity(overlayOpacity),
         child: Stack(
           alignment: Alignment.center,
           children: const <Widget>[
@@ -77,21 +82,19 @@ class ActionOverlay extends StatelessWidget {
               alignment: Alignment.bottomLeft,
               child: _VideoTimer(),
             ),
+            Align(
+              alignment: Alignment.bottomRight,
+              child: _FullScreenButton(),
+            ),
           ],
         ),
       ),
     );
 
+    // TODO add VideoProgressIndicator => wait initialize?!
+    // TODO check duration in Timer
+
     /*
-      onTap: () => logic.isPlaying ? logic.pause() : logic.play(),
-                if (!logic.isPlaying)
-                  const Center(
-                    child: Icon(
-                      Icons.play_arrow,
-                      size: 32.0,
-                      color: Colors.white,
-                    ),
-                  ),
         VideoProgressIndicator(
           logic.controller,
           allowScrubbing: true,
@@ -107,8 +110,11 @@ class _PlayPauseButton extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final logic = ref.watch(playPauseLogicRef);
+
     final animationController = useAnimationController(
       duration: kThemeAnimationDuration,
+      initialValue: logic.initialState,
     );
 
     return GestureDetector(
@@ -117,7 +123,7 @@ class _PlayPauseButton extends HookConsumerWidget {
           // The animation is stopped at the beginning.
           case AnimationStatus.dismissed:
             animationController.forward();
-            ref.watch(isOpenedOverlay.notifier).state = false;
+            logic.play();
             break;
           // The animation is running from beginning to end.
           case AnimationStatus.forward:
@@ -127,7 +133,7 @@ class _PlayPauseButton extends HookConsumerWidget {
           // The animation is stopped at the end.
           case AnimationStatus.completed:
             animationController.reverse();
-            ref.watch(isOpenedOverlay.notifier).state = true;
+            logic.pause();
             break;
         }
       },
@@ -152,7 +158,7 @@ class _PlayPauseButton extends HookConsumerWidget {
 class _VideoTimer extends ConsumerWidget {
   const _VideoTimer({
     Key? key,
-    this.margin = const EdgeInsets.all(8.0),
+    this.margin = const EdgeInsets.all(12.0),
   }) : super(key: key);
 
   final EdgeInsetsGeometry margin;
@@ -163,7 +169,7 @@ class _VideoTimer extends ConsumerWidget {
 
     final defaultStyle = DefaultTextStyle.of(context).style;
 
-    return Ink(
+    return Padding(
       padding: margin,
       child: RichText(
         text: TextSpan(
@@ -176,6 +182,31 @@ class _VideoTimer extends ConsumerWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _FullScreenButton extends StatelessWidget {
+  const _FullScreenButton({
+    Key? key,
+    this.margin = const EdgeInsets.all(8.0),
+  }) : super(key: key);
+
+  final EdgeInsetsGeometry margin;
+  // TODO put stateProvider
+  final isFullScreen = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      padding: margin,
+      onPressed: () {
+        // TODO Open Dialog
+      },
+      icon: Icon(
+        isFullScreen ? Icons.fullscreen_exit : Icons.fullscreen,
+        color: Colors.white,
       ),
     );
   }
