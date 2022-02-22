@@ -23,6 +23,9 @@ dev_dependencies:
   flutter_lints: ^1.0.4
   freezed_annotation: ^1.1.0
 
+flutter_gen:
+  output: lib/assets/
+
 flutter:
   uses-material-design: true
   assets:

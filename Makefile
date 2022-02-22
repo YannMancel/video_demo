@@ -22,6 +22,7 @@ install: ## Install environment
 	fvm install $(FLUTTER_VERSION)
 	fvm use $(FLUTTER_VERSION)
 	$(FLUTTER) pub global activate devtools
+	$(FLUTTER) pub global activate flutter_gen
 
 ##
 ## ---------------------------------------------------------------
@@ -67,6 +68,11 @@ devtools: ## Serving DevTools
 ## Generator
 ## ---------------------------------------------------------------
 ##
+
+.PHONY: generate-assets
+generate-assets: ## Generate assets with flutter_gen
+	@$(call print_color_message,"Generate assets with flutter_gen")
+	fluttergen
 
 .PHONY: generate-files
 generate-files: ## Generate files with build_runner

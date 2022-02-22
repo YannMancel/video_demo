@@ -92,7 +92,6 @@ class ActionOverlay extends StatelessWidget {
     );
 
     // TODO add VideoProgressIndicator => wait initialize?!
-    // TODO check duration in Timer
 
     /*
         VideoProgressIndicator(
