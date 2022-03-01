@@ -3,7 +3,8 @@ import 'package:flutter_hooks/flutter_hooks.dart' show useAnimationController;
 import 'package:hooks_riverpod/hooks_riverpod.dart'
     show ConsumerWidget, HookConsumerWidget, WidgetRef;
 import 'package:video_demo/_features.dart';
-import 'package:video_player/video_player.dart' show VideoPlayer;
+import 'package:video_player/video_player.dart'
+    show VideoPlayer, VideoProgressIndicator;
 
 class VideoPlayerWidget extends ConsumerWidget {
   const VideoPlayerWidget({Key? key}) : super(key: key);
@@ -79,37 +80,35 @@ class ActionOverlay extends StatelessWidget {
           children: const <Widget>[
             _PlayPauseButton(),
             Align(
-              alignment: Alignment.bottomLeft,
-              child: _VideoTimer(),
+              alignment: Alignment.topRight,
+              child: _MoreActionButton(),
             ),
             Align(
               alignment: Alignment.bottomRight,
               child: _FullScreenButton(),
             ),
             Align(
-              alignment: Alignment.topRight,
-              child: _MoreActionButton(),
+              alignment: Alignment.bottomLeft,
+              child: _VideoTimer(),
+            ),
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: _VideoProgressIndicator(),
             ),
           ],
         ),
       ),
     );
-
-    // TODO add VideoProgressIndicator => wait initialize?!
-
-    /*
-        VideoProgressIndicator(
-          logic.controller,
-          allowScrubbing: true,
-        ),
-    */
   }
 }
 
 class _PlayPauseButton extends HookConsumerWidget {
-  const _PlayPauseButton({Key? key}) : super(key: key);
+  const _PlayPauseButton({
+    Key? key,
+    this.iconSize = 32.0,
+  }) : super(key: key);
 
-  static const _kIconSize = 32.0;
+  final double iconSize;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -148,7 +147,7 @@ class _PlayPauseButton extends HookConsumerWidget {
         child: Padding(
           padding: const EdgeInsets.all(4.0),
           child: AnimatedIcon(
-            size: _kIconSize,
+            size: iconSize,
             icon: AnimatedIcons.play_pause,
             progress: animationController,
           ),
@@ -161,7 +160,7 @@ class _PlayPauseButton extends HookConsumerWidget {
 class _VideoTimer extends ConsumerWidget {
   const _VideoTimer({
     Key? key,
-    this.margin = const EdgeInsets.all(12.0),
+    this.margin = const EdgeInsets.all(16.0),
   }) : super(key: key);
 
   final EdgeInsetsGeometry margin;
@@ -217,7 +216,7 @@ class _ButtonLayout extends StatelessWidget {
 class _FullScreenButton extends StatelessWidget {
   const _FullScreenButton({
     Key? key,
-    this.margin = const EdgeInsets.all(8.0),
+    this.margin = const EdgeInsets.only(bottom: 4.0),
   }) : super(key: key);
 
   final EdgeInsetsGeometry margin;
@@ -242,7 +241,7 @@ class _FullScreenButton extends StatelessWidget {
 class _MoreActionButton extends StatelessWidget {
   const _MoreActionButton({
     Key? key,
-    this.margin = const EdgeInsets.all(8.0),
+    this.margin = const EdgeInsets.only(top: 4.0),
   }) : super(key: key);
 
   final EdgeInsetsGeometry margin;
@@ -258,6 +257,20 @@ class _MoreActionButton extends StatelessWidget {
         Icons.more_vert,
         color: Colors.white,
       ),
+    );
+  }
+}
+
+class _VideoProgressIndicator extends ConsumerWidget {
+  const _VideoProgressIndicator({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final logic = ref.watch(videoPlayerRef.notifier) as VideoLogicImpl;
+
+    return VideoProgressIndicator(
+      logic.controller,
+      allowScrubbing: true,
     );
   }
 }
