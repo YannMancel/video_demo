@@ -86,6 +86,10 @@ class ActionOverlay extends StatelessWidget {
               alignment: Alignment.bottomRight,
               child: _FullScreenButton(),
             ),
+            Align(
+              alignment: Alignment.topRight,
+              child: _MoreActionButton(),
+            ),
           ],
         ),
       ),
@@ -186,6 +190,30 @@ class _VideoTimer extends ConsumerWidget {
   }
 }
 
+class _ButtonLayout extends StatelessWidget {
+  const _ButtonLayout({
+    Key? key,
+    required this.margin,
+    this.onPressed,
+    required this.icon,
+  }) : super(key: key);
+
+  final EdgeInsetsGeometry margin;
+  final VoidCallback? onPressed;
+  final Widget icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return IconButton(
+      padding: margin,
+      onPressed: () => onPressed?.call(),
+      icon: icon,
+      highlightColor: Colors.transparent,
+      splashColor: Colors.transparent,
+    );
+  }
+}
+
 class _FullScreenButton extends StatelessWidget {
   const _FullScreenButton({
     Key? key,
@@ -198,13 +226,36 @@ class _FullScreenButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      padding: margin,
+    return _ButtonLayout(
+      margin: margin,
       onPressed: () {
         // TODO Open Dialog
       },
       icon: Icon(
         isFullScreen ? Icons.fullscreen_exit : Icons.fullscreen,
+        color: Colors.white,
+      ),
+    );
+  }
+}
+
+class _MoreActionButton extends StatelessWidget {
+  const _MoreActionButton({
+    Key? key,
+    this.margin = const EdgeInsets.all(8.0),
+  }) : super(key: key);
+
+  final EdgeInsetsGeometry margin;
+
+  @override
+  Widget build(BuildContext context) {
+    return _ButtonLayout(
+      margin: margin,
+      onPressed: () {
+        // TODO Open Dialog
+      },
+      icon: const Icon(
+        Icons.more_vert,
         color: Colors.white,
       ),
     );

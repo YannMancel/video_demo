@@ -55,10 +55,6 @@ class VideoLogicImpl extends VideoLogic {
 
     await _controller.initialize();
 
-    // TODO check duration in Timer
-    // Initialize the video timer provider before the displaying
-    //_listener();
-
     state = const VideoState.initialized();
   }
 

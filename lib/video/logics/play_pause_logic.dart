@@ -3,7 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart'
 import 'package:video_demo/_features.dart';
 
 abstract class PlayPauseLogic {
-  static String get kName => 'VideoLogic';
+  static String get kName => 'PlayPauseLogic';
 
   double get initialState;
   void play();

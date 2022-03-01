@@ -6,4 +6,9 @@ class VideoTimer {
 
   final Duration position;
   final Duration duration;
+
+  @override
+  String toString() {
+    return 'VideoTimer [position: $position, duration: $duration]';
+  }
 }
