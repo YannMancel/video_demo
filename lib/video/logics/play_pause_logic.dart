@@ -15,7 +15,7 @@ class PlayPauseLogicImpl implements PlayPauseLogic {
 
   final Reader reader;
 
-  VideoLogic get _videoLogic => reader(videoPlayerRef.notifier);
+  VideoPlayerLogic get _videoLogic => reader(videoPlayerRef.notifier);
 
   StateController<bool> get _isOpenedOverlay {
     return reader(isOpenedOverlay.notifier);

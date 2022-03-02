@@ -3,9 +3,9 @@ import 'package:hooks_riverpod/hooks_riverpod.dart'
 import 'package:video_demo/_features.dart';
 
 final videoPlayerRef =
-    StateNotifierProvider.autoDispose<VideoLogic, VideoState>(
+    StateNotifierProvider.autoDispose<VideoPlayerLogic, VideoState>(
   (ref) {
-    final logic = VideoLogicImpl(
+    final logic = VideoPlayerLogicImpl(
       reader: ref.read,
       // http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4
       assetPath: Assets.videos.bigBuckBunny,
@@ -13,11 +13,16 @@ final videoPlayerRef =
     ref.onDispose(logic.onDispose);
     return logic;
   },
-  name: VideoLogic.kName,
+  name: VideoPlayerLogic.kName,
 );
 
-final videoTimerRef = StateProvider.autoDispose<VideoTimer>(
-  (_) => const VideoTimer(),
+final videoTimerRef =
+    StateNotifierProvider.autoDispose<VideoTimerLogic, VideoTimer>(
+  (ref) {
+    final logic = VideoTimerLogicImpl(reader: ref.read);
+    ref.onDispose(logic.onDispose);
+    return logic;
+  },
   name: 'videoTimerRef',
 );
 

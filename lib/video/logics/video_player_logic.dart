@@ -3,10 +3,10 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:video_demo/_features.dart';
 import 'package:video_player/video_player.dart' show VideoPlayerController;
 
-abstract class VideoLogic extends StateNotifier<VideoState> {
-  VideoLogic({required VideoState state}) : super(state);
+abstract class VideoPlayerLogic extends StateNotifier<VideoState> {
+  VideoPlayerLogic({required VideoState state}) : super(state);
 
-  static String get kName => 'VideoLogic';
+  static String get kName => 'VideoPlayerLogic';
 
   double get aspectRatio;
   bool get isInitialized;
@@ -15,46 +15,27 @@ abstract class VideoLogic extends StateNotifier<VideoState> {
   Future<void> play();
   Future<void> pause();
   Future<void> setVolume({required double volume});
+  Duration get position;
+  Duration get duration;
+  void addVideoListener(VoidCallback listener);
+  void removeVideoListener(VoidCallback listener);
   void onDispose();
 }
 
-class VideoLogicImpl extends VideoLogic {
-  VideoLogicImpl({
-    // http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4
-    String assetPath = 'assets/videos/Butterfly.mp4',
+class VideoPlayerLogicImpl extends VideoPlayerLogic {
+  VideoPlayerLogicImpl({
     required this.reader,
+    required String assetPath,
   }) : super(state: const VideoState.notInitialized()) {
     _initialize(assetPath: assetPath);
   }
 
   final Reader reader;
   late VideoPlayerController _controller;
-  late VoidCallback _listener;
-
-  VoidCallback _initializeListener() {
-    return () {
-      final videoTimerLogic = reader(videoTimerRef.notifier);
-      if (videoTimerLogic.mounted) {
-        videoTimerLogic.state = VideoTimer(
-          /// The current playback position.
-          /// It is [Duration.zero] if the video hasn't been initialized.
-          position: isInitialized ? _controller.value.position : Duration.zero,
-
-          /// The total duration of the video.
-          /// It is [Duration.zero] if the video hasn't been initialized.
-          duration: _controller.value.duration,
-        );
-      }
-    };
-  }
 
   Future<void> _initialize({required String assetPath}) async {
-    _listener = _initializeListener();
-    _controller = VideoPlayerController.asset(assetPath)
-      ..addListener(_listener);
-
+    _controller = VideoPlayerController.asset(assetPath);
     await _controller.initialize();
-
     state = const VideoState.initialized();
   }
 
@@ -95,9 +76,30 @@ class VideoLogicImpl extends VideoLogic {
     }
   }
 
+  /// The current playback position.
+  /// It is [Duration.zero] if the video hasn't been initialized.
+  @override
+  Duration get position {
+    return isInitialized ? _controller.value.position : Duration.zero;
+  }
+
+  /// The total duration of the video.
+  /// It is [Duration.zero] if the video hasn't been initialized.
+  @override
+  Duration get duration => _controller.value.duration;
+
+  @override
+  void addVideoListener(VoidCallback listener) {
+    _controller.addListener(listener);
+  }
+
+  @override
+  void removeVideoListener(VoidCallback listener) {
+    _controller.removeListener(listener);
+  }
+
   @override
   void onDispose() {
-    _controller.removeListener(_listener);
     Future.sync(
       () async => await _controller.dispose(),
     );

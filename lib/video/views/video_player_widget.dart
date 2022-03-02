@@ -27,7 +27,7 @@ class _VideoView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final logic = ref.watch(videoPlayerRef.notifier) as VideoLogicImpl;
+    final logic = ref.watch(videoPlayerRef.notifier) as VideoPlayerLogicImpl;
 
     return AspectRatio(
       aspectRatio: logic.aspectRatio,
@@ -266,7 +266,7 @@ class _VideoProgressIndicator extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final logic = ref.watch(videoPlayerRef.notifier) as VideoLogicImpl;
+    final logic = ref.watch(videoPlayerRef.notifier) as VideoPlayerLogicImpl;
 
     return VideoProgressIndicator(
       logic.controller,
