@@ -35,3 +35,8 @@ final playPauseLogicRef = Provider.autoDispose<PlayPauseLogic>(
   (ref) => PlayPauseLogicImpl(reader: ref.read),
   name: PlayPauseLogic.kName,
 );
+
+final fullscreenLogicRef = Provider.autoDispose<FullscreenLogic>(
+  (_) => const FullscreenLogicImpl(),
+  name: FullscreenLogic.kName,
+);

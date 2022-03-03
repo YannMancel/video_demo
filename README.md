@@ -13,7 +13,7 @@
 ## Dependencies
 * Flutter Version Management
     * [fvm](https://fvm.app/)
-* Generators (assets, splash screens & dependency graph)
+* Generators (assets)
     * [flutter_gen](https://pub.dev/packages/flutter_gen)
 * Data class generator
     * [build_runner](https://pub.dev/packages/build_runner)
@@ -24,6 +24,8 @@
     * [hooks_riverpod](https://pub.dev/packages/hooks_riverpod)
 * Video player
     * [video_player](https://pub.dev/packages/video_player)
+* Prevent the screen from sleeping
+  * [wakelock](https://pub.dev/packages/wakelock)
 
 ## Troubleshooting
 

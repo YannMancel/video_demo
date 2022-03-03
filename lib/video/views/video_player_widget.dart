@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart' show useAnimationController;
+import 'package:flutter_hooks/flutter_hooks.dart'
+    show useAnimationController, useState;
 import 'package:hooks_riverpod/hooks_riverpod.dart'
     show ConsumerWidget, HookConsumerWidget, WidgetRef;
 import 'package:video_demo/_features.dart';
@@ -213,25 +214,29 @@ class _ButtonLayout extends StatelessWidget {
   }
 }
 
-class _FullScreenButton extends StatelessWidget {
+class _FullScreenButton extends HookConsumerWidget {
   const _FullScreenButton({
     Key? key,
     this.margin = const EdgeInsets.only(bottom: 4.0),
   }) : super(key: key);
 
   final EdgeInsetsGeometry margin;
-  // TODO put stateProvider
-  final isFullScreen = false;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isFullScreen = useState<bool>(false);
+    final logic = ref.watch(fullscreenLogicRef);
+
     return _ButtonLayout(
       margin: margin,
-      onPressed: () {
-        // TODO Open Dialog
+      onPressed: () async {
+        isFullScreen.value
+            ? await logic.exitFullscreen()
+            : await logic.openFullscreen();
+        isFullScreen.value = !isFullScreen.value;
       },
       icon: Icon(
-        isFullScreen ? Icons.fullscreen_exit : Icons.fullscreen,
+        isFullScreen.value ? Icons.fullscreen_exit : Icons.fullscreen,
         color: Colors.white,
       ),
     );
