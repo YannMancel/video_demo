@@ -23,7 +23,18 @@ class HomePage extends ConsumerWidget {
         child: videoState.maybeWhen<Widget>(
           notInitialized: () => const CircularProgressIndicator(),
           error: (_) => const Text('Error'),
-          orElse: () => const VideoPlayerWidget(),
+          orElse: () => VideoPlayerWidget(
+            onTapFullscreenIcon: () async {
+              final logic = ref.read(fullscreenLogicRef);
+              await logic.openFullscreen();
+
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => const VideoPlayerPage(),
+                ),
+              );
+            },
+          ),
         ),
       ),
     );

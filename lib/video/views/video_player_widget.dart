@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart'
-    show useAnimationController, useState;
+import 'package:flutter_hooks/flutter_hooks.dart' show useAnimationController;
 import 'package:hooks_riverpod/hooks_riverpod.dart'
     show ConsumerWidget, HookConsumerWidget, WidgetRef;
 import 'package:video_demo/_features.dart';
@@ -8,7 +7,14 @@ import 'package:video_player/video_player.dart'
     show VideoPlayer, VideoProgressIndicator;
 
 class VideoPlayerWidget extends ConsumerWidget {
-  const VideoPlayerWidget({Key? key}) : super(key: key);
+  const VideoPlayerWidget({
+    Key? key,
+    this.isFullscreen = false,
+    required this.onTapFullscreenIcon,
+  }) : super(key: key);
+
+  final bool isFullscreen;
+  final VoidCallback onTapFullscreenIcon;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -18,13 +24,23 @@ class VideoPlayerWidget extends ConsumerWidget {
     return videoState.maybeWhen<Widget>(
       notInitialized: () => const Center(child: CircularProgressIndicator()),
       error: (_) => const Center(child: Text('Error')),
-      orElse: () => const _VideoView(),
+      orElse: () => _VideoView(
+        isFullscreen: isFullscreen,
+        onTapFullscreenIcon: onTapFullscreenIcon,
+      ),
     );
   }
 }
 
 class _VideoView extends ConsumerWidget {
-  const _VideoView({Key? key}) : super(key: key);
+  const _VideoView({
+    Key? key,
+    this.isFullscreen = false,
+    required this.onTapFullscreenIcon,
+  }) : super(key: key);
+
+  final bool isFullscreen;
+  final VoidCallback onTapFullscreenIcon;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -36,7 +52,10 @@ class _VideoView extends ConsumerWidget {
         alignment: Alignment.center,
         children: <Widget>[
           VideoPlayer(logic.controller),
-          const _Overlay(),
+          _Overlay(
+            isFullscreen: isFullscreen,
+            onTapFullscreenIcon: onTapFullscreenIcon,
+          ),
         ],
       ),
     );
@@ -44,7 +63,14 @@ class _VideoView extends ConsumerWidget {
 }
 
 class _Overlay extends ConsumerWidget {
-  const _Overlay({Key? key}) : super(key: key);
+  const _Overlay({
+    Key? key,
+    this.isFullscreen = false,
+    required this.onTapFullscreenIcon,
+  }) : super(key: key);
+
+  final bool isFullscreen;
+  final VoidCallback onTapFullscreenIcon;
 
   static const _kAnimationDuration = Duration(seconds: 1);
 
@@ -57,7 +83,12 @@ class _Overlay extends ConsumerWidget {
       onTap: () => ref.watch(isOpenedOverlay.notifier).state = !isOpen,
       child: AnimatedSwitcher(
         duration: _kAnimationDuration,
-        child: isOpen ? const ActionOverlay() : const SizedBox.expand(),
+        child: isOpen
+            ? ActionOverlay(
+                isFullscreen: isFullscreen,
+                onTapFullscreenIcon: onTapFullscreenIcon,
+              )
+            : const SizedBox.expand(),
       ),
     );
   }
@@ -67,9 +98,13 @@ class ActionOverlay extends StatelessWidget {
   const ActionOverlay({
     Key? key,
     this.overlayOpacity = 0.4,
+    this.isFullscreen = false,
+    required this.onTapFullscreenIcon,
   }) : super(key: key);
 
   final double overlayOpacity;
+  final bool isFullscreen;
+  final VoidCallback onTapFullscreenIcon;
 
   @override
   Widget build(BuildContext context) {
@@ -78,21 +113,24 @@ class ActionOverlay extends StatelessWidget {
         color: Colors.black.withOpacity(overlayOpacity),
         child: Stack(
           alignment: Alignment.center,
-          children: const <Widget>[
-            _PlayPauseButton(),
-            Align(
+          children: <Widget>[
+            const _PlayPauseButton(),
+            const Align(
               alignment: Alignment.topRight,
               child: _MoreActionButton(),
             ),
             Align(
               alignment: Alignment.bottomRight,
-              child: _FullScreenButton(),
+              child: _FullScreenButton(
+                isFullscreen: isFullscreen,
+                onTapFullscreenIcon: onTapFullscreenIcon,
+              ),
             ),
-            Align(
+            const Align(
               alignment: Alignment.bottomLeft,
               child: _VideoTimer(),
             ),
-            Align(
+            const Align(
               alignment: Alignment.bottomCenter,
               child: _VideoProgressIndicator(),
             ),
@@ -214,29 +252,25 @@ class _ButtonLayout extends StatelessWidget {
   }
 }
 
-class _FullScreenButton extends HookConsumerWidget {
+class _FullScreenButton extends StatelessWidget {
   const _FullScreenButton({
     Key? key,
     this.margin = const EdgeInsets.only(bottom: 4.0),
+    this.isFullscreen = false,
+    required this.onTapFullscreenIcon,
   }) : super(key: key);
 
   final EdgeInsetsGeometry margin;
+  final bool isFullscreen;
+  final VoidCallback onTapFullscreenIcon;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final isFullScreen = useState<bool>(false);
-    final logic = ref.watch(fullscreenLogicRef);
-
+  Widget build(BuildContext context) {
     return _ButtonLayout(
       margin: margin,
-      onPressed: () async {
-        isFullScreen.value
-            ? await logic.exitFullscreen()
-            : await logic.openFullscreen();
-        isFullScreen.value = !isFullScreen.value;
-      },
+      onPressed: onTapFullscreenIcon,
       icon: Icon(
-        isFullScreen.value ? Icons.fullscreen_exit : Icons.fullscreen,
+        isFullscreen ? Icons.fullscreen_exit : Icons.fullscreen,
         color: Colors.white,
       ),
     );
