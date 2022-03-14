@@ -29,8 +29,8 @@ class HomePage extends ConsumerWidget {
               await logic.openFullscreen();
 
               Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => const VideoPlayerPage(),
+                FadeTransitionRoute(
+                  page: const VideoPlayerPage(),
                 ),
               );
             },
