@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart' show useAnimationController;
 import 'package:hooks_riverpod/hooks_riverpod.dart'
-    show ConsumerWidget, HookConsumerWidget, WidgetRef;
+    show ConsumerWidget, HookConsumerWidget, Override, ProviderScope, WidgetRef;
 import 'package:video_demo/_features.dart';
 import 'package:video_player/video_player.dart'
     show VideoPlayer, VideoProgressIndicator;
@@ -21,26 +21,22 @@ class VideoPlayerWidget extends ConsumerWidget {
     final videoState = ref.watch(videoPlayerRef);
 
     // TODO put AspectRatio here
-    return videoState.maybeWhen<Widget>(
-      notInitialized: () => const Center(child: CircularProgressIndicator()),
-      error: (_) => const Center(child: Text('Error')),
-      orElse: () => _VideoView(
-        isFullscreen: isFullscreen,
-        onTapFullscreenIcon: onTapFullscreenIcon,
+    return ProviderScope(
+      overrides: <Override>[
+        isScopedFullscreen.overrideWithValue(isFullscreen),
+        onScopedTapFullscreenIcon.overrideWithValue(onTapFullscreenIcon),
+      ],
+      child: videoState.maybeWhen<Widget>(
+        notInitialized: () => const Center(child: CircularProgressIndicator()),
+        error: (_) => const Center(child: Text('Error is found.')),
+        orElse: () => const _VideoView(),
       ),
     );
   }
 }
 
 class _VideoView extends ConsumerWidget {
-  const _VideoView({
-    Key? key,
-    this.isFullscreen = false,
-    required this.onTapFullscreenIcon,
-  }) : super(key: key);
-
-  final bool isFullscreen;
-  final VoidCallback onTapFullscreenIcon;
+  const _VideoView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -52,10 +48,7 @@ class _VideoView extends ConsumerWidget {
         alignment: Alignment.center,
         children: <Widget>[
           VideoPlayer(logic.controller),
-          _Overlay(
-            isFullscreen: isFullscreen,
-            onTapFullscreenIcon: onTapFullscreenIcon,
-          ),
+          const _Overlay(),
         ],
       ),
     );
@@ -63,14 +56,7 @@ class _VideoView extends ConsumerWidget {
 }
 
 class _Overlay extends ConsumerWidget {
-  const _Overlay({
-    Key? key,
-    this.isFullscreen = false,
-    required this.onTapFullscreenIcon,
-  }) : super(key: key);
-
-  final bool isFullscreen;
-  final VoidCallback onTapFullscreenIcon;
+  const _Overlay({Key? key}) : super(key: key);
 
   static const _kAnimationDuration = Duration(seconds: 1);
 
@@ -83,12 +69,7 @@ class _Overlay extends ConsumerWidget {
       onTap: () => ref.watch(isOpenedOverlay.notifier).state = !isOpen,
       child: AnimatedSwitcher(
         duration: _kAnimationDuration,
-        child: isOpen
-            ? ActionOverlay(
-                isFullscreen: isFullscreen,
-                onTapFullscreenIcon: onTapFullscreenIcon,
-              )
-            : const SizedBox.expand(),
+        child: isOpen ? const ActionOverlay() : const SizedBox.expand(),
       ),
     );
   }
@@ -98,45 +79,85 @@ class ActionOverlay extends StatelessWidget {
   const ActionOverlay({
     Key? key,
     this.overlayOpacity = 0.4,
-    this.isFullscreen = false,
-    required this.onTapFullscreenIcon,
   }) : super(key: key);
 
   final double overlayOpacity;
-  final bool isFullscreen;
-  final VoidCallback onTapFullscreenIcon;
 
   @override
   Widget build(BuildContext context) {
     return SizedBox.expand(
       child: ColoredBox(
         color: Colors.black.withOpacity(overlayOpacity),
-        child: Stack(
-          alignment: Alignment.center,
-          children: <Widget>[
-            const _PlayPauseButton(),
-            const Align(
-              alignment: Alignment.topRight,
-              child: _MoreActionButton(),
-            ),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: _FullScreenButton(
-                isFullscreen: isFullscreen,
-                onTapFullscreenIcon: onTapFullscreenIcon,
-              ),
-            ),
-            const Align(
-              alignment: Alignment.bottomLeft,
-              child: _VideoTimer(),
-            ),
-            const Align(
-              alignment: Alignment.bottomCenter,
-              child: _VideoProgressIndicator(),
-            ),
-          ],
+        child: OrientationBuilder(
+          builder: (_, orientation) {
+            return orientation == Orientation.portrait
+                ? const _PortraitOverlay()
+                : const _LandscapeOverlay();
+          },
         ),
       ),
+    );
+  }
+}
+
+class _PortraitOverlay extends StatelessWidget {
+  const _PortraitOverlay({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: const <Widget>[
+        _PlayPauseButton(),
+        Align(
+          alignment: Alignment.topRight,
+          child: _MoreActionButton(),
+        ),
+        Align(
+          alignment: Alignment.bottomRight,
+          child: _FullScreenButton(),
+        ),
+        Align(
+          alignment: Alignment.bottomLeft,
+          child: _VideoTimer(),
+        ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: _VideoProgressIndicator(),
+        ),
+      ],
+    );
+  }
+}
+
+class _LandscapeOverlay extends StatelessWidget {
+  const _LandscapeOverlay({Key? key}) : super(key: key);
+
+  // TODO: change format for landscape
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: const <Widget>[
+        _PlayPauseButton(),
+        Align(
+          alignment: Alignment.topRight,
+          child: _MoreActionButton(),
+        ),
+        Align(
+          alignment: Alignment.bottomRight,
+          child: _FullScreenButton(),
+        ),
+        Align(
+          alignment: Alignment.bottomLeft,
+          child: _VideoTimer(),
+        ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: _VideoProgressIndicator(),
+        ),
+      ],
     );
   }
 }
@@ -252,20 +273,19 @@ class _ButtonLayout extends StatelessWidget {
   }
 }
 
-class _FullScreenButton extends StatelessWidget {
+class _FullScreenButton extends ConsumerWidget {
   const _FullScreenButton({
     Key? key,
     this.margin = const EdgeInsets.only(bottom: 4.0),
-    this.isFullscreen = false,
-    required this.onTapFullscreenIcon,
   }) : super(key: key);
 
   final EdgeInsetsGeometry margin;
-  final bool isFullscreen;
-  final VoidCallback onTapFullscreenIcon;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isFullscreen = ref.watch(isScopedFullscreen);
+    final onTapFullscreenIcon = ref.watch(onScopedTapFullscreenIcon);
+
     return _ButtonLayout(
       margin: margin,
       onPressed: onTapFullscreenIcon,
