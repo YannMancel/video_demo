@@ -98,11 +98,15 @@ class VideoPlayerPage extends HookConsumerWidget {
                 child: Container(
                   margin: const EdgeInsets.all(24.0),
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.4),
+                    gradient: RadialGradient(
+                      colors: <Color>[
+                        backgroundColor.withOpacity(0.4),
+                        Colors.transparent,
+                      ],
+                    ),
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
-                    color: Colors.red,
                     onPressed: () => _resetScale(
                       transformationController: transformationController,
                       animationController: animationController,
