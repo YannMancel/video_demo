@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart'
+    show useAnimationController, useState, useTransformationController;
 import 'package:hooks_riverpod/hooks_riverpod.dart'
-    show ConsumerWidget, WidgetRef;
+    show HookConsumerWidget, WidgetRef;
 import 'package:video_demo/_features.dart';
 
-class VideoPlayerPage extends ConsumerWidget {
+class VideoPlayerPage extends HookConsumerWidget {
   const VideoPlayerPage({
     Key? key,
     this.backgroundColor = Colors.black,
@@ -18,11 +20,49 @@ class VideoPlayerPage extends ConsumerWidget {
     await logic.exitFullscreen();
   }
 
-  double get _minScale => hasInteractiveViewer ? 0.8 : 1.0;
-  double get _maxScale => hasInteractiveViewer ? 5.0 : 1.0;
+  void _resetScale({
+    required TransformationController transformationController,
+    required AnimationController animationController,
+    required ValueNotifier<bool> notifier,
+  }) {
+    final animation = Matrix4Tween(
+      begin: transformationController.value,
+      end: Matrix4.identity(),
+    ).animate(animationController);
+
+    animation.addListener(() {
+      transformationController.value = animation.value;
+      if (animation.value.getMaxScaleOnAxis() == 1) notifier.value = false;
+    });
+
+    animationController.reset();
+    animationController.forward();
+  }
+
+  void _analyseScale({
+    required TransformationController controller,
+    required ValueNotifier<bool> notifier,
+  }) {
+    final scale = controller.value.getMaxScaleOnAxis();
+
+    if (scale == 1.0 && notifier.value == true) {
+      notifier.value = false;
+      return;
+    }
+
+    if (scale > 1.0 && notifier.value == false) {
+      notifier.value = true;
+    }
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final transformationController = useTransformationController();
+    final animationController = useAnimationController(
+      duration: const Duration(milliseconds: 500),
+    );
+    final isScaled = useState<bool>(false);
+
     return WillPopScope(
       onWillPop: () async {
         await _exitFullscreen(ref);
@@ -30,19 +70,52 @@ class VideoPlayerPage extends ConsumerWidget {
       },
       child: Material(
         color: backgroundColor,
-        child: Center(
-          child: InteractiveViewer(
-            clipBehavior: Clip.none,
-            minScale: _minScale,
-            maxScale: _maxScale,
-            child: VideoPlayerWidget(
-              isFullscreen: true,
-              onTapFullscreenIcon: () async {
-                await _exitFullscreen(ref);
-                Navigator.of(context).pop<void>();
-              },
+        child: Stack(
+          children: <Widget>[
+            Center(
+              child: InteractiveViewer(
+                clipBehavior: Clip.none,
+                minScale: 1.0,
+                maxScale: 5.0,
+                scaleEnabled: hasInteractiveViewer,
+                transformationController: transformationController,
+                onInteractionUpdate: (_) => _analyseScale(
+                  controller: transformationController,
+                  notifier: isScaled,
+                ),
+                child: VideoPlayerWidget(
+                  isFullscreen: true,
+                  onTapFullscreenIcon: () async {
+                    await _exitFullscreen(ref);
+                    Navigator.of(context).pop<void>();
+                  },
+                ),
+              ),
             ),
-          ),
+            if (isScaled.value)
+              Align(
+                alignment: Alignment.topRight,
+                child: Container(
+                  margin: const EdgeInsets.all(24.0),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.4),
+                    shape: BoxShape.circle,
+                  ),
+                  child: IconButton(
+                    color: Colors.red,
+                    onPressed: () => _resetScale(
+                      transformationController: transformationController,
+                      animationController: animationController,
+                      notifier: isScaled,
+                    ),
+                    icon: const Icon(
+                      Icons.restore,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ),
+          ],
         ),
       ),
     );
