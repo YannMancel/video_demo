@@ -32,7 +32,7 @@ class HomePage extends ConsumerWidget {
 
               Navigator.of(context).push(
                 FadeTransitionRoute(
-                  page: const VideoPlayerPage(),
+                  page: const FullscreenVideoPage(),
                 ),
               );
             },

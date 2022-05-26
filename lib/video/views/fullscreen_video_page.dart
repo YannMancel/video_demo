@@ -5,8 +5,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart'
     show HookConsumerWidget, WidgetRef;
 import 'package:video_demo/_features.dart';
 
-class VideoPlayerPage extends HookConsumerWidget {
-  const VideoPlayerPage({
+class FullscreenVideoPage extends HookConsumerWidget {
+  const FullscreenVideoPage({
     Key? key,
     this.backgroundColor = Colors.black,
     this.hasInteractiveViewer = true,

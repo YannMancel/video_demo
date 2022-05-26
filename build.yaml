@@ -1,0 +1,11 @@
+# https://www.wilsonwilson.dev/articles/flutter-build-yaml/
+
+targets:
+  $default:
+    builders:
+      freezed|freezed:
+        enabled: true
+        generate_for:
+          - "lib/video/models/video_link.dart"
+          - "lib/video/models/video_state.dart"
+          - "lib/video/models/video_timer.dart"

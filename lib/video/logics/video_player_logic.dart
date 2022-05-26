@@ -25,16 +25,19 @@ abstract class VideoPlayerLogic extends StateNotifier<VideoState> {
 class VideoPlayerLogicImpl extends VideoPlayerLogic {
   VideoPlayerLogicImpl({
     required this.reader,
-    required String assetPath,
+    required VideoLink videoLink,
   }) : super(state: const VideoState.notInitialized()) {
-    _initialize(assetPath: assetPath);
+    _initialize(videoLink: videoLink);
   }
 
   final Reader reader;
   late VideoPlayerController _controller;
 
-  Future<void> _initialize({required String assetPath}) async {
-    _controller = VideoPlayerController.asset(assetPath);
+  Future<void> _initialize({required VideoLink videoLink}) async {
+    _controller = videoLink.when<VideoPlayerController>(
+      network: (videoPath) => VideoPlayerController.network(videoPath),
+      asset: (videoPath) => VideoPlayerController.asset(videoPath),
+    );
     await _controller.initialize();
     state = const VideoState.initialized();
   }

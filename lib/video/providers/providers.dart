@@ -3,13 +3,24 @@ import 'package:hooks_riverpod/hooks_riverpod.dart'
     show Provider, StateNotifierProvider, StateProvider;
 import 'package:video_demo/_features.dart';
 
+final videoLinksRef = Provider<List<VideoLink>>(
+  (_) => <VideoLink>[
+    const VideoLink.network(
+      videoPath: 'https://commondatastorage.googleapis.com/'
+          'gtv-videos-bucket/sample/BigBuckBunny.mp4',
+    ),
+    VideoLink.asset(videoPath: Assets.videos.butterfly),
+  ],
+  name: 'videoLinksRef',
+);
+
 final videoPlayerRef =
     StateNotifierProvider.autoDispose<VideoPlayerLogic, VideoState>(
   (ref) {
+    final videoLink = ref.watch(videoLinksRef)[0];
     final logic = VideoPlayerLogicImpl(
       reader: ref.read,
-      // http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4
-      assetPath: Assets.videos.bigBuckBunny,
+      videoLink: videoLink,
     );
     ref.onDispose(logic.onDispose);
     return logic;

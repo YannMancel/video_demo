@@ -12,9 +12,6 @@ import 'package:flutter/widgets.dart';
 class $AssetsVideosGen {
   const $AssetsVideosGen();
 
-  /// File path: assets/videos/BigBuckBunny.mp4
-  String get bigBuckBunny => 'assets/videos/BigBuckBunny.mp4';
-
   /// File path: assets/videos/Butterfly.mp4
   String get butterfly => 'assets/videos/Butterfly.mp4';
 }
