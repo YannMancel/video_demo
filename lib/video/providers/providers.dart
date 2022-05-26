@@ -14,10 +14,14 @@ final videoLinksRef = Provider<List<VideoLink>>(
   name: 'videoLinksRef',
 );
 
-final videoPlayerRef =
-    StateNotifierProvider.autoDispose<VideoPlayerLogic, VideoState>(
-  (ref) {
-    final videoLink = ref.watch(videoLinksRef)[0];
+final scopedVideoLink = Provider.autoDispose<VideoLink>(
+  (_) => throw UnimplementedError('This provider must be override.'),
+  name: 'scopedVideoLink',
+);
+
+final videoPlayerRef = StateNotifierProvider.autoDispose
+    .family<VideoPlayerLogic, VideoState, VideoLink>(
+  (ref, videoLink) {
     final logic = VideoPlayerLogicImpl(
       reader: ref.read,
       videoLink: videoLink,
@@ -28,23 +32,30 @@ final videoPlayerRef =
   name: VideoPlayerLogic.kName,
 );
 
-final videoTimerRef =
-    StateNotifierProvider.autoDispose<VideoTimerLogic, VideoTimer>(
-  (ref) {
-    final logic = VideoTimerLogicImpl(reader: ref.read);
+final videoTimerRef = StateNotifierProvider.autoDispose
+    .family<VideoTimerLogic, VideoTimer, VideoLink>(
+  (ref, videoLink) {
+    final logic = VideoTimerLogicImpl(
+      reader: ref.read,
+      videoLink: videoLink,
+    );
     ref.onDispose(logic.onDispose);
     return logic;
   },
-  name: 'videoTimerRef',
+  name: VideoTimerLogic.kName,
 );
 
-final isOpenedOverlay = StateProvider.autoDispose<bool>(
-  (_) => true,
+final isOpenedOverlay = StateProvider.autoDispose.family<bool, VideoLink>(
+  (_, __) => true,
   name: 'isOpenedOverlay',
 );
 
-final playPauseLogicRef = Provider.autoDispose<PlayPauseLogic>(
-  (ref) => PlayPauseLogicImpl(reader: ref.read),
+final playPauseLogicRef =
+    Provider.autoDispose.family<PlayPauseLogic, VideoLink>(
+  (ref, videoLink) => PlayPauseLogicImpl(
+    reader: ref.read,
+    videoLink: videoLink,
+  ),
   name: PlayPauseLogic.kName,
 );
 

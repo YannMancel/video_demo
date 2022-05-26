@@ -11,14 +11,20 @@ abstract class PlayPauseLogic {
 }
 
 class PlayPauseLogicImpl implements PlayPauseLogic {
-  const PlayPauseLogicImpl({required this.reader});
+  const PlayPauseLogicImpl({
+    required this.reader,
+    required this.videoLink,
+  });
 
   final Reader reader;
+  final VideoLink videoLink;
 
-  VideoPlayerLogic get _videoLogic => reader(videoPlayerRef.notifier);
+  VideoPlayerLogic get _videoLogic {
+    return reader(videoPlayerRef(videoLink).notifier);
+  }
 
   StateController<bool> get _isOpenedOverlay {
-    return reader(isOpenedOverlay.notifier);
+    return reader(isOpenedOverlay(videoLink).notifier);
   }
 
   @override

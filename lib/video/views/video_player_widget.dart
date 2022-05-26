@@ -9,22 +9,25 @@ import 'package:video_player/video_player.dart'
 class VideoPlayerWidget extends ConsumerWidget {
   const VideoPlayerWidget({
     Key? key,
+    required this.videoLink,
     this.isFullscreen = false,
     required this.onTapFullscreenIcon,
   }) : super(key: key);
 
+  final VideoLink videoLink;
   final bool isFullscreen;
   final VoidCallback onTapFullscreenIcon;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final videoState = ref.watch(videoPlayerRef);
+    final videoState = ref.watch(videoPlayerRef(videoLink));
 
     // TODO put AspectRatio here
     return ProviderScope(
       overrides: <Override>[
         isScopedFullscreen.overrideWithValue(isFullscreen),
         onScopedTapFullscreenIcon.overrideWithValue(onTapFullscreenIcon),
+        scopedVideoLink.overrideWithValue(videoLink),
       ],
       child: videoState.maybeWhen<Widget>(
         notInitialized: () => const Center(child: CircularProgressIndicator()),
@@ -40,14 +43,15 @@ class _VideoView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final logic = ref.watch(videoPlayerRef.notifier) as VideoPlayerLogicImpl;
+    final videoLink = ref.watch(scopedVideoLink);
+    final logic = ref.watch(videoPlayerRef(videoLink).notifier);
 
     return AspectRatio(
       aspectRatio: logic.aspectRatio,
       child: Stack(
         alignment: Alignment.center,
         children: <Widget>[
-          VideoPlayer(logic.controller),
+          VideoPlayer((logic as VideoPlayerLogicImpl).controller),
           const _Overlay(),
         ],
       ),
@@ -62,11 +66,14 @@ class _Overlay extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isOpen = ref.watch(isOpenedOverlay);
+    final videoLink = ref.watch(scopedVideoLink);
+    final isOpen = ref.watch(isOpenedOverlay(videoLink));
 
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: () => ref.watch(isOpenedOverlay.notifier).state = !isOpen,
+      onTap: () {
+        ref.read(isOpenedOverlay(videoLink).notifier).state = !isOpen;
+      },
       child: AnimatedSwitcher(
         duration: _kAnimationDuration,
         child: isOpen ? const ActionOverlay() : const SizedBox.expand(),
@@ -165,6 +172,7 @@ class _LandscapeOverlay extends StatelessWidget {
 class _PlayPauseButton extends HookConsumerWidget {
   const _PlayPauseButton({
     Key? key,
+    // ignore: unused_element
     this.iconSize = 32.0,
   }) : super(key: key);
 
@@ -172,7 +180,8 @@ class _PlayPauseButton extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final logic = ref.watch(playPauseLogicRef);
+    final videoLink = ref.watch(scopedVideoLink);
+    final logic = ref.watch(playPauseLogicRef(videoLink));
 
     final animationController = useAnimationController(
       duration: kThemeAnimationDuration,
@@ -220,6 +229,7 @@ class _PlayPauseButton extends HookConsumerWidget {
 class _VideoTimer extends ConsumerWidget {
   const _VideoTimer({
     Key? key,
+    // ignore: unused_element
     this.margin = const EdgeInsets.all(16.0),
   }) : super(key: key);
 
@@ -227,7 +237,8 @@ class _VideoTimer extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final videoTimer = ref.watch(videoTimerRef);
+    final videoLink = ref.watch(scopedVideoLink);
+    final videoTimer = ref.watch(videoTimerRef(videoLink));
 
     final defaultStyle = DefaultTextStyle.of(context).style;
 
@@ -276,6 +287,7 @@ class _ButtonLayout extends StatelessWidget {
 class _FullScreenButton extends ConsumerWidget {
   const _FullScreenButton({
     Key? key,
+    // ignore: unused_element
     this.margin = const EdgeInsets.only(bottom: 4.0),
   }) : super(key: key);
 
@@ -300,6 +312,7 @@ class _FullScreenButton extends ConsumerWidget {
 class _MoreActionButton extends StatelessWidget {
   const _MoreActionButton({
     Key? key,
+    // ignore: unused_element
     this.margin = const EdgeInsets.only(top: 4.0),
   }) : super(key: key);
 
@@ -325,10 +338,11 @@ class _VideoProgressIndicator extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final logic = ref.watch(videoPlayerRef.notifier) as VideoPlayerLogicImpl;
+    final videoLink = ref.watch(scopedVideoLink);
+    final logic = ref.watch(videoPlayerRef(videoLink).notifier);
 
     return VideoProgressIndicator(
-      logic.controller,
+      (logic as VideoPlayerLogicImpl).controller,
       allowScrubbing: true,
     );
   }

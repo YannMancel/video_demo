@@ -13,31 +13,54 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final videoState = ref.watch(videoPlayerRef);
+    final videoLinks = ref.watch(videoLinksRef);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
       ),
-      body: Center(
-        child: videoState.maybeWhen<Widget>(
-          notInitialized: () => const CircularProgressIndicator(),
-          error: (_) => const Text('Error'),
-          orElse: () => VideoPlayerWidget(
-            onTapFullscreenIcon: () {
-              Future.sync(() async {
-                final logic = ref.read(fullscreenLogicRef);
-                await logic.openFullscreen();
-              });
+      body: ListView.builder(
+        padding: const EdgeInsets.only(bottom: 8.0, left: 8.0, right: 8.0),
+        itemBuilder: (_, index) {
+          final videoLink = videoLinks[index];
+          return Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: _VideoCard(videoLink: videoLink),
+          );
+        },
+        itemCount: videoLinks.length,
+      ),
+    );
+  }
+}
 
-              Navigator.of(context).push(
-                FadeTransitionRoute(
-                  page: const FullscreenVideoPage(),
-                ),
-              );
-            },
-          ),
-        ),
+class _VideoCard extends ConsumerWidget {
+  const _VideoCard({
+    Key? key,
+    required this.videoLink,
+  }) : super(key: key);
+
+  final VideoLink videoLink;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Card(
+      clipBehavior: Clip.hardEdge,
+      margin: EdgeInsets.zero,
+      child: VideoPlayerWidget(
+        videoLink: videoLink,
+        onTapFullscreenIcon: () {
+          Future.sync(() async {
+            final logic = ref.read(fullscreenLogicRef);
+            await logic.openFullscreen();
+          });
+
+          Navigator.of(context).push(
+            FadeTransitionRoute(
+              page: FullscreenVideoPage(videoLink: videoLink),
+            ),
+          );
+        },
       ),
     );
   }

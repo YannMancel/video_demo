@@ -13,14 +13,18 @@ abstract class VideoTimerLogic extends StateNotifier<VideoTimer> {
 class VideoTimerLogicImpl extends VideoTimerLogic {
   VideoTimerLogicImpl({
     required this.reader,
+    required this.videoLink,
   }) : super(state: const VideoTimer()) {
     _initialize();
   }
 
   final Reader reader;
+  final VideoLink videoLink;
   late VoidCallback _listener;
 
-  VideoPlayerLogic get _videoLogic => reader(videoPlayerRef.notifier);
+  VideoPlayerLogic get _videoLogic {
+    return reader(videoPlayerRef(videoLink).notifier);
+  }
 
   VoidCallback _initializeListener() {
     return () {

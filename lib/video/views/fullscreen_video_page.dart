@@ -8,10 +8,12 @@ import 'package:video_demo/_features.dart';
 class FullscreenVideoPage extends HookConsumerWidget {
   const FullscreenVideoPage({
     Key? key,
+    required this.videoLink,
     this.backgroundColor = Colors.black,
     this.hasInteractiveViewer = true,
   }) : super(key: key);
 
+  final VideoLink videoLink;
   final Color backgroundColor;
   final bool hasInteractiveViewer;
 
@@ -84,6 +86,7 @@ class FullscreenVideoPage extends HookConsumerWidget {
                   notifier: isScaled,
                 ),
                 child: VideoPlayerWidget(
+                  videoLink: videoLink,
                   isFullscreen: true,
                   onTapFullscreenIcon: () {
                     _exitFullscreen(ref).whenComplete(() {
