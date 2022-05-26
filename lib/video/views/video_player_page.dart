@@ -85,9 +85,10 @@ class VideoPlayerPage extends HookConsumerWidget {
                 ),
                 child: VideoPlayerWidget(
                   isFullscreen: true,
-                  onTapFullscreenIcon: () async {
-                    await _exitFullscreen(ref);
-                    Navigator.of(context).pop<void>();
+                  onTapFullscreenIcon: () {
+                    _exitFullscreen(ref).whenComplete(() {
+                      Navigator.of(context).pop<void>();
+                    });
                   },
                 ),
               ),

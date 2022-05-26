@@ -24,9 +24,11 @@ class HomePage extends ConsumerWidget {
           notInitialized: () => const CircularProgressIndicator(),
           error: (_) => const Text('Error'),
           orElse: () => VideoPlayerWidget(
-            onTapFullscreenIcon: () async {
-              final logic = ref.read(fullscreenLogicRef);
-              await logic.openFullscreen();
+            onTapFullscreenIcon: () {
+              Future.sync(() async {
+                final logic = ref.read(fullscreenLogicRef);
+                await logic.openFullscreen();
+              });
 
               Navigator.of(context).push(
                 FadeTransitionRoute(

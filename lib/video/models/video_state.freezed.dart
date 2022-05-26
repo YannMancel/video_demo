@@ -12,37 +12,7 @@ part of 'video_state.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more informations: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
-
-/// @nodoc
-class _$VideoStateTearOff {
-  const _$VideoStateTearOff();
-
-  _NotInitialized notInitialized() {
-    return const _NotInitialized();
-  }
-
-  _Initialized initialized() {
-    return const _Initialized();
-  }
-
-  _Play play() {
-    return const _Play();
-  }
-
-  _Pause pause() {
-    return const _Pause();
-  }
-
-  _Error error({required Exception exception}) {
-    return _Error(
-      exception: exception,
-    );
-  }
-}
-
-/// @nodoc
-const $VideoState = _$VideoStateTearOff();
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
 /// @nodoc
 mixin _$VideoState {
@@ -121,21 +91,22 @@ class _$VideoStateCopyWithImpl<$Res> implements $VideoStateCopyWith<$Res> {
 }
 
 /// @nodoc
-abstract class _$NotInitializedCopyWith<$Res> {
-  factory _$NotInitializedCopyWith(
-          _NotInitialized value, $Res Function(_NotInitialized) then) =
-      __$NotInitializedCopyWithImpl<$Res>;
+abstract class _$$_NotInitializedCopyWith<$Res> {
+  factory _$$_NotInitializedCopyWith(
+          _$_NotInitialized value, $Res Function(_$_NotInitialized) then) =
+      __$$_NotInitializedCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$NotInitializedCopyWithImpl<$Res> extends _$VideoStateCopyWithImpl<$Res>
-    implements _$NotInitializedCopyWith<$Res> {
-  __$NotInitializedCopyWithImpl(
-      _NotInitialized _value, $Res Function(_NotInitialized) _then)
-      : super(_value, (v) => _then(v as _NotInitialized));
+class __$$_NotInitializedCopyWithImpl<$Res>
+    extends _$VideoStateCopyWithImpl<$Res>
+    implements _$$_NotInitializedCopyWith<$Res> {
+  __$$_NotInitializedCopyWithImpl(
+      _$_NotInitialized _value, $Res Function(_$_NotInitialized) _then)
+      : super(_value, (v) => _then(v as _$_NotInitialized));
 
   @override
-  _NotInitialized get _value => super._value as _NotInitialized;
+  _$_NotInitialized get _value => super._value as _$_NotInitialized;
 }
 
 /// @nodoc
@@ -151,7 +122,7 @@ class _$_NotInitialized implements _NotInitialized {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _NotInitialized);
+        (other.runtimeType == runtimeType && other is _$_NotInitialized);
   }
 
   @override
@@ -243,21 +214,21 @@ abstract class _NotInitialized implements VideoState {
 }
 
 /// @nodoc
-abstract class _$InitializedCopyWith<$Res> {
-  factory _$InitializedCopyWith(
-          _Initialized value, $Res Function(_Initialized) then) =
-      __$InitializedCopyWithImpl<$Res>;
+abstract class _$$_InitializedCopyWith<$Res> {
+  factory _$$_InitializedCopyWith(
+          _$_Initialized value, $Res Function(_$_Initialized) then) =
+      __$$_InitializedCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$InitializedCopyWithImpl<$Res> extends _$VideoStateCopyWithImpl<$Res>
-    implements _$InitializedCopyWith<$Res> {
-  __$InitializedCopyWithImpl(
-      _Initialized _value, $Res Function(_Initialized) _then)
-      : super(_value, (v) => _then(v as _Initialized));
+class __$$_InitializedCopyWithImpl<$Res> extends _$VideoStateCopyWithImpl<$Res>
+    implements _$$_InitializedCopyWith<$Res> {
+  __$$_InitializedCopyWithImpl(
+      _$_Initialized _value, $Res Function(_$_Initialized) _then)
+      : super(_value, (v) => _then(v as _$_Initialized));
 
   @override
-  _Initialized get _value => super._value as _Initialized;
+  _$_Initialized get _value => super._value as _$_Initialized;
 }
 
 /// @nodoc
@@ -273,7 +244,7 @@ class _$_Initialized implements _Initialized {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _Initialized);
+        (other.runtimeType == runtimeType && other is _$_Initialized);
   }
 
   @override
@@ -365,19 +336,19 @@ abstract class _Initialized implements VideoState {
 }
 
 /// @nodoc
-abstract class _$PlayCopyWith<$Res> {
-  factory _$PlayCopyWith(_Play value, $Res Function(_Play) then) =
-      __$PlayCopyWithImpl<$Res>;
+abstract class _$$_PlayCopyWith<$Res> {
+  factory _$$_PlayCopyWith(_$_Play value, $Res Function(_$_Play) then) =
+      __$$_PlayCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$PlayCopyWithImpl<$Res> extends _$VideoStateCopyWithImpl<$Res>
-    implements _$PlayCopyWith<$Res> {
-  __$PlayCopyWithImpl(_Play _value, $Res Function(_Play) _then)
-      : super(_value, (v) => _then(v as _Play));
+class __$$_PlayCopyWithImpl<$Res> extends _$VideoStateCopyWithImpl<$Res>
+    implements _$$_PlayCopyWith<$Res> {
+  __$$_PlayCopyWithImpl(_$_Play _value, $Res Function(_$_Play) _then)
+      : super(_value, (v) => _then(v as _$_Play));
 
   @override
-  _Play get _value => super._value as _Play;
+  _$_Play get _value => super._value as _$_Play;
 }
 
 /// @nodoc
@@ -393,7 +364,7 @@ class _$_Play implements _Play {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _Play);
+        (other.runtimeType == runtimeType && other is _$_Play);
   }
 
   @override
@@ -485,19 +456,19 @@ abstract class _Play implements VideoState {
 }
 
 /// @nodoc
-abstract class _$PauseCopyWith<$Res> {
-  factory _$PauseCopyWith(_Pause value, $Res Function(_Pause) then) =
-      __$PauseCopyWithImpl<$Res>;
+abstract class _$$_PauseCopyWith<$Res> {
+  factory _$$_PauseCopyWith(_$_Pause value, $Res Function(_$_Pause) then) =
+      __$$_PauseCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$PauseCopyWithImpl<$Res> extends _$VideoStateCopyWithImpl<$Res>
-    implements _$PauseCopyWith<$Res> {
-  __$PauseCopyWithImpl(_Pause _value, $Res Function(_Pause) _then)
-      : super(_value, (v) => _then(v as _Pause));
+class __$$_PauseCopyWithImpl<$Res> extends _$VideoStateCopyWithImpl<$Res>
+    implements _$$_PauseCopyWith<$Res> {
+  __$$_PauseCopyWithImpl(_$_Pause _value, $Res Function(_$_Pause) _then)
+      : super(_value, (v) => _then(v as _$_Pause));
 
   @override
-  _Pause get _value => super._value as _Pause;
+  _$_Pause get _value => super._value as _$_Pause;
 }
 
 /// @nodoc
@@ -513,7 +484,7 @@ class _$_Pause implements _Pause {
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _Pause);
+        (other.runtimeType == runtimeType && other is _$_Pause);
   }
 
   @override
@@ -605,26 +576,26 @@ abstract class _Pause implements VideoState {
 }
 
 /// @nodoc
-abstract class _$ErrorCopyWith<$Res> {
-  factory _$ErrorCopyWith(_Error value, $Res Function(_Error) then) =
-      __$ErrorCopyWithImpl<$Res>;
+abstract class _$$_ErrorCopyWith<$Res> {
+  factory _$$_ErrorCopyWith(_$_Error value, $Res Function(_$_Error) then) =
+      __$$_ErrorCopyWithImpl<$Res>;
   $Res call({Exception exception});
 }
 
 /// @nodoc
-class __$ErrorCopyWithImpl<$Res> extends _$VideoStateCopyWithImpl<$Res>
-    implements _$ErrorCopyWith<$Res> {
-  __$ErrorCopyWithImpl(_Error _value, $Res Function(_Error) _then)
-      : super(_value, (v) => _then(v as _Error));
+class __$$_ErrorCopyWithImpl<$Res> extends _$VideoStateCopyWithImpl<$Res>
+    implements _$$_ErrorCopyWith<$Res> {
+  __$$_ErrorCopyWithImpl(_$_Error _value, $Res Function(_$_Error) _then)
+      : super(_value, (v) => _then(v as _$_Error));
 
   @override
-  _Error get _value => super._value as _Error;
+  _$_Error get _value => super._value as _$_Error;
 
   @override
   $Res call({
     Object? exception = freezed,
   }) {
-    return _then(_Error(
+    return _then(_$_Error(
       exception: exception == freezed
           ? _value.exception
           : exception // ignore: cast_nullable_to_non_nullable
@@ -650,7 +621,7 @@ class _$_Error implements _Error {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _Error &&
+            other is _$_Error &&
             const DeepCollectionEquality().equals(other.exception, exception));
   }
 
@@ -660,8 +631,8 @@ class _$_Error implements _Error {
 
   @JsonKey(ignore: true)
   @override
-  _$ErrorCopyWith<_Error> get copyWith =>
-      __$ErrorCopyWithImpl<_Error>(this, _$identity);
+  _$$_ErrorCopyWith<_$_Error> get copyWith =>
+      __$$_ErrorCopyWithImpl<_$_Error>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -745,9 +716,10 @@ class _$_Error implements _Error {
 }
 
 abstract class _Error implements VideoState {
-  const factory _Error({required Exception exception}) = _$_Error;
+  const factory _Error({required final Exception exception}) = _$_Error;
 
-  Exception get exception;
+  Exception get exception => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
-  _$ErrorCopyWith<_Error> get copyWith => throw _privateConstructorUsedError;
+  _$$_ErrorCopyWith<_$_Error> get copyWith =>
+      throw _privateConstructorUsedError;
 }

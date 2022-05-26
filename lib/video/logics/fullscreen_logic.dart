@@ -15,12 +15,7 @@ class FullscreenLogicImpl implements FullscreenLogic {
   @override
   Future<void> openFullscreen() async {
     await SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
-    await SystemChrome.setPreferredOrientations(
-      const <DeviceOrientation>[
-        DeviceOrientation.landscapeLeft,
-        DeviceOrientation.landscapeRight,
-      ],
-    );
+    await SystemChrome.setPreferredOrientations(DeviceOrientation.values);
     await Wakelock.enable();
   }
 
