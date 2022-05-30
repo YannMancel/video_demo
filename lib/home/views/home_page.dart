@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart' show useEffect;
 import 'package:hooks_riverpod/hooks_riverpod.dart'
-    show ConsumerWidget, WidgetRef;
+    show ConsumerWidget, HookConsumerWidget, WidgetRef;
 import 'package:video_demo/_features.dart';
 
-class HomePage extends ConsumerWidget {
+class HomePage extends HookConsumerWidget {
   const HomePage({
     Key? key,
     required this.title,
@@ -13,23 +16,39 @@ class HomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final videoLinks = ref.watch(videoLinksRef);
+    final videoLinks = ref.watch(multiVideoManagerLogicRef);
+
+    // Waits the first frame to setup listeners on video logic providers
+    useEffect(() {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(multiVideoManagerLogicRef.notifier).start();
+      });
+      return null;
+    }, const []);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(title),
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.only(bottom: 8.0, left: 8.0, right: 8.0),
-        itemBuilder: (_, index) {
-          final videoLink = videoLinks[index];
-          return Padding(
-            padding: const EdgeInsets.only(top: 8.0),
-            child: _VideoCard(videoLink: videoLink),
-          );
-        },
-        itemCount: videoLinks.length,
-      ),
+      body: videoLinks.isEmpty
+          ? const Center(
+              child: Text('No video'),
+            )
+          : ListView.builder(
+              padding: const EdgeInsets.only(
+                bottom: 8.0,
+                left: 8.0,
+                right: 8.0,
+              ),
+              itemBuilder: (_, index) {
+                final videoLink = videoLinks[index];
+                return Padding(
+                  padding: const EdgeInsets.only(top: 8.0),
+                  child: _VideoCard(videoLink: videoLink),
+                );
+              },
+              itemCount: videoLinks.length,
+            ),
     );
   }
 }

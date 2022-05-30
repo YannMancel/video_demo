@@ -12,6 +12,7 @@ abstract class VideoPlayerLogic extends StateNotifier<VideoState> {
   bool get isInitialized;
   bool get isPlaying;
   bool get isMuted;
+  bool get isVideoEnd;
   Future<void> play();
   Future<void> pause();
   Future<void> setVolume({required double volume});
@@ -55,6 +56,9 @@ class VideoPlayerLogicImpl extends VideoPlayerLogic {
 
   @override
   bool get isMuted => _controller.value.volume == 0.0;
+
+  @override
+  bool get isVideoEnd => position == duration;
 
   @override
   Future<void> play() async {

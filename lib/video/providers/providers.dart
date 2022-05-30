@@ -5,11 +5,11 @@ import 'package:video_demo/_features.dart';
 
 final videoLinksRef = Provider<List<VideoLink>>(
   (_) => <VideoLink>[
+    VideoLink.asset(videoPath: Assets.videos.butterfly),
     const VideoLink.network(
       videoPath: 'https://commondatastorage.googleapis.com/'
           'gtv-videos-bucket/sample/BigBuckBunny.mp4',
     ),
-    VideoLink.asset(videoPath: Assets.videos.butterfly),
   ],
   name: 'videoLinksRef',
 );
@@ -19,9 +19,23 @@ final scopedVideoLink = Provider.autoDispose<VideoLink>(
   name: 'scopedVideoLink',
 );
 
+final multiVideoManagerLogicRef =
+    StateNotifierProvider.autoDispose<MultiVideoManagerLogic, List<VideoLink>>(
+  (ref) {
+    final logic = MultiVideoManagerLogicImpl(reader: ref.read);
+    ref.onDispose(logic.onDispose);
+    return logic;
+  },
+  name: MultiVideoManagerLogic.kName,
+);
+
 final videoPlayerRef = StateNotifierProvider.autoDispose
     .family<VideoPlayerLogic, VideoState, VideoLink>(
   (ref, videoLink) {
+    // To avoid autoDispose of this provider and to can manage overlay by
+    // MultiVideoManagerLogic
+    ref.watch(isOpenedOverlay(videoLink).notifier);
+
     final logic = VideoPlayerLogicImpl(
       reader: ref.read,
       videoLink: videoLink,
