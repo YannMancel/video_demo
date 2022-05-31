@@ -7,6 +7,13 @@ final videoLinksRef = Provider<List<VideoLink>>(
   (_) => <VideoLink>[
     VideoLink.asset(videoPath: Assets.videos.butterfly),
     const VideoLink.network(
+      videoPath: 'https://assets.mixkit.co/'
+          'videos/'
+          'preview/'
+          'mixkit-a-girl-blowing-a-bubble-gum-at-an-amusement'
+          '-park-1226-large.mp4',
+    ),
+    const VideoLink.network(
       videoPath: 'https://commondatastorage.googleapis.com/'
           'gtv-videos-bucket/sample/BigBuckBunny.mp4',
     ),

@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart' show VoidCallback;
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart' show Reader, StateNotifier;
 import 'package:video_demo/_features.dart';
 import 'package:video_player/video_player.dart' show VideoPlayerController;
 
@@ -15,6 +15,7 @@ abstract class VideoPlayerLogic extends StateNotifier<VideoState> {
   bool get isVideoEnd;
   Future<void> play();
   Future<void> pause();
+  Future<void> reset();
   Future<void> setVolume({required double volume});
   Duration get position;
   Duration get duration;
@@ -73,6 +74,14 @@ class VideoPlayerLogicImpl extends VideoPlayerLogic {
     if (isInitialized && isPlaying) {
       await _controller.pause();
       state = const VideoState.pause();
+    }
+  }
+
+  @override
+  Future<void> reset() async {
+    if (isInitialized) {
+      await _controller.seekTo(Duration.zero);
+      state = const VideoState.initialized();
     }
   }
 

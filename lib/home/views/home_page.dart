@@ -21,7 +21,9 @@ class HomePage extends HookConsumerWidget {
     // Waits the first frame to setup listeners on video logic providers
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(multiVideoManagerLogicRef.notifier).start();
+        ref
+            .read(multiVideoManagerLogicRef.notifier)
+            .setupLogicsOnCurrentAndNextVideoPlayers();
       });
       return null;
     }, const []);
