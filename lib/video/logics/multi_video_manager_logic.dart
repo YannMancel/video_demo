@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart'
     show Reader, StateController, StateNotifier;
@@ -9,6 +11,7 @@ abstract class MultiVideoManagerLogic extends StateNotifier<List<VideoLink>> {
   static String get kName => 'MultiVideoManagerLogic';
 
   void setupLogicsOnCurrentAndNextVideoPlayers();
+  Stream<int> get currentIndexStream;
   void onDispose();
 }
 
@@ -16,12 +19,14 @@ class MultiVideoManagerLogicImpl extends MultiVideoManagerLogic {
   MultiVideoManagerLogicImpl({
     required this.reader,
   }) : super(state: const <VideoLink>[]) {
+    _setupCurrentIndex();
     _fetchData();
   }
 
   final Reader reader;
 
-  int _currentIndex = -1;
+  late int _currentIndex;
+  late StreamController<int> _indexController;
 
   late VideoPlayerLogic _currentVideoLogic;
   late VideoPlayerLogic _nextVideoLogic;
@@ -32,6 +37,13 @@ class MultiVideoManagerLogicImpl extends MultiVideoManagerLogic {
   late bool _isReadyToPlayCurrentVideo;
   late bool _isReadyToPlayNextVideo;
   late bool _hasCompleteCurrentVideo;
+
+  void _setupCurrentIndex() {
+    _currentIndex = -1;
+    _indexController = StreamController<int>.broadcast();
+  }
+
+  set _index(int value) => _indexController.sink.add(value);
 
   VideoLink get _currentVideoLink => state[_currentIndex];
   VideoLink get _nextVideoLink => state[_currentIndex + 1];
@@ -106,6 +118,28 @@ class MultiVideoManagerLogicImpl extends MultiVideoManagerLogic {
     state = _videoLinks;
   }
 
+  void _removePreviousListeners() {
+    if (_currentIndex > -1) _removeListeners();
+  }
+
+  void _removeListeners() {
+    _currentVideoLogic.removeVideoListener(_currentVideoListener);
+    _nextVideoLogic.removeVideoListener(_nextVideoListener);
+  }
+
+  void _updateVideoLogics() {
+    _currentIndex++;
+    _index = _currentIndex;
+    _currentVideoLogic = _videoLogic(videoLink: _currentVideoLink);
+    if (!_isLastIndex) _nextVideoLogic = _videoLogic(videoLink: _nextVideoLink);
+  }
+
+  void _resetTriggers() {
+    _isReadyToPlayCurrentVideo = false;
+    _isReadyToPlayNextVideo = false;
+    _hasCompleteCurrentVideo = false;
+  }
+
   void _addListeners() {
     // The Call methods,  on listeners, allow to run again the notify of
     // the video player even when is in stable state without state change.
@@ -119,27 +153,6 @@ class MultiVideoManagerLogicImpl extends MultiVideoManagerLogic {
     }
   }
 
-  void _removeListeners() {
-    _currentVideoLogic.removeVideoListener(_currentVideoListener);
-    _nextVideoLogic.removeVideoListener(_nextVideoListener);
-  }
-
-  void _removePreviousListeners() {
-    if (_currentIndex > -1) _removeListeners();
-  }
-
-  void _updateVideoLogics() {
-    _currentIndex++;
-    _currentVideoLogic = _videoLogic(videoLink: _currentVideoLink);
-    if (!_isLastIndex) _nextVideoLogic = _videoLogic(videoLink: _nextVideoLink);
-  }
-
-  void _resetTriggers() {
-    _isReadyToPlayCurrentVideo = false;
-    _isReadyToPlayNextVideo = false;
-    _hasCompleteCurrentVideo = false;
-  }
-
   @override
   void setupLogicsOnCurrentAndNextVideoPlayers() {
     _removePreviousListeners();
@@ -149,5 +162,13 @@ class MultiVideoManagerLogicImpl extends MultiVideoManagerLogic {
   }
 
   @override
-  void onDispose() => _removeListeners();
+  Stream<int> get currentIndexStream => _indexController.stream.distinct();
+
+  @override
+  void onDispose() {
+    Future.sync(() async {
+      await _indexController.close();
+      _removeListeners();
+    });
+  }
 }

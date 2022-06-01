@@ -28,6 +28,8 @@
     * [video_player][dependencies_video_player]
 * Prevent the screen from sleeping
     * [wakelock][dependencies_wakelock]
+* Scroll to position
+    * [scrollable_positioned_list][scrollable_positioned_list]
 
 ## Troubleshooting
 
@@ -51,6 +53,7 @@
 [dependencies_hooks_riverpod]: https://pub.dev/packages/hooks_riverpod
 [dependencies_video_player]: https://pub.dev/packages/video_player
 [dependencies_wakelock]: https://pub.dev/packages/wakelock
+[scrollable_positioned_list]: https://pub.dev/packages/scrollable_positioned_list
 [useful_android_studio]: https://developer.android.com/studio
 [useful_virtual_device]: https://developer.android.com/studio/run/managing-avds.html
 [useful_developer_options]: https://developer.android.com/studio/debug/dev-options.html#enable

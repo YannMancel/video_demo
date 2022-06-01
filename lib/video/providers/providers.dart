@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart' show VoidCallback;
 import 'package:hooks_riverpod/hooks_riverpod.dart'
-    show Provider, StateNotifierProvider, StateProvider;
+    show Provider, StateNotifierProvider, StateProvider, StreamProvider;
 import 'package:video_demo/_features.dart';
 
 final videoLinksRef = Provider<List<VideoLink>>(
@@ -34,6 +34,11 @@ final multiVideoManagerLogicRef =
     return logic;
   },
   name: MultiVideoManagerLogic.kName,
+);
+
+final currentIndexStreamRef = StreamProvider.autoDispose<int>(
+  (ref) => ref.watch(multiVideoManagerLogicRef.notifier).currentIndexStream,
+  name: 'currentIndexStreamRef',
 );
 
 final videoPlayerRef = StateNotifierProvider.autoDispose
