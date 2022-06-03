@@ -1,4 +1,4 @@
-![coverage][coverage_badge]
+[![badge_flutter]][link_flutter_release]
 
 # video_demo
 **Goal**: A Flutter project to manage video.
@@ -43,7 +43,8 @@
 * [Create a new virtual device][useful_virtual_device]
 * [Enable developer options and debugging][useful_developer_options]
 
-[flutter_badge]: https://img.shields.io/badge/flutter-v3.0.1-blue?logo=flutter
+[badge_flutter]: https://img.shields.io/badge/flutter-v3.0.1-blue?logo=flutter
+[link_flutter_release]: https://docs.flutter.dev/development/tools/sdk/releases
 [dependencies_fvm]: https://fvm.app/
 [dependencies_flutter_gen]: https://pub.dev/packages/flutter_gen
 [dependencies_build_runner]: https://pub.dev/packages/build_runner

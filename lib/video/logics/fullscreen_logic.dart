@@ -2,15 +2,14 @@ import 'package:flutter/services.dart'
     show DeviceOrientation, SystemChrome, SystemUiMode, SystemUiOverlay;
 import 'package:wakelock/wakelock.dart' show Wakelock;
 
-abstract class FullscreenLogic {
+abstract class FullscreenLogicInterface {
   static String get kName => 'FullscreenLogic';
-
   Future<void> openFullscreen();
   Future<void> exitFullscreen();
 }
 
-class FullscreenLogicImpl implements FullscreenLogic {
-  const FullscreenLogicImpl();
+class FullscreenLogic implements FullscreenLogicInterface {
+  const FullscreenLogic();
 
   @override
   Future<void> openFullscreen() async {

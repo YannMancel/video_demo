@@ -18,13 +18,13 @@ class HomePage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final videoLinks = ref.watch(multiVideoManagerLogicRef);
+    final videoLinks = ref.watch(videoLinksRef);
 
     // Waits the first frame to setup listeners on video logic providers
     useEffect(() {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         ref
-            .read(multiVideoManagerLogicRef.notifier)
+            .read(videosManagerLogicRef)
             .setupLogicsOnCurrentAndNextVideoPlayers();
       });
       return null;

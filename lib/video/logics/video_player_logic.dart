@@ -3,11 +3,10 @@ import 'package:hooks_riverpod/hooks_riverpod.dart' show Reader, StateNotifier;
 import 'package:video_demo/_features.dart';
 import 'package:video_player/video_player.dart' show VideoPlayerController;
 
-abstract class VideoPlayerLogic extends StateNotifier<VideoState> {
-  VideoPlayerLogic({required VideoState state}) : super(state);
-
+abstract class VideoPlayerLogicInterface {
   static String get kName => 'VideoPlayerLogic';
-
+  StateNotifier<VideoState> get asStateNotifier;
+  VideoPlayerController get controller;
   double get aspectRatio;
   bool get isInitialized;
   bool get isPlaying;
@@ -24,11 +23,12 @@ abstract class VideoPlayerLogic extends StateNotifier<VideoState> {
   void onDispose();
 }
 
-class VideoPlayerLogicImpl extends VideoPlayerLogic {
-  VideoPlayerLogicImpl({
+class VideoPlayerLogic extends StateNotifier<VideoState>
+    implements VideoPlayerLogicInterface {
+  VideoPlayerLogic({
     required this.reader,
     required VideoLink videoLink,
-  }) : super(state: const VideoState.notInitialized()) {
+  }) : super(const VideoState.notInitialized()) {
     _initialize(videoLink: videoLink);
   }
 
@@ -44,6 +44,10 @@ class VideoPlayerLogicImpl extends VideoPlayerLogic {
     state = const VideoState.initialized();
   }
 
+  @override
+  StateNotifier<VideoState> get asStateNotifier => this;
+
+  @override
   VideoPlayerController get controller => _controller;
 
   @override

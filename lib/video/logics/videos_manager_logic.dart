@@ -1,24 +1,22 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart'
     show Reader, StateController, StateNotifier;
 import 'package:video_demo/_features.dart';
 
-abstract class MultiVideoManagerLogic extends StateNotifier<List<VideoLink>> {
-  MultiVideoManagerLogic({required List<VideoLink> state}) : super(state);
-
-  static String get kName => 'MultiVideoManagerLogic';
-
+abstract class VideosManagerLogicInterface {
+  static String get kName => 'VideosManagerLogic';
+  StateNotifier<List<VideoLink>> get asStateNotifier;
   void setupLogicsOnCurrentAndNextVideoPlayers();
   Stream<int> get currentIndexStream;
   void onDispose();
 }
 
-class MultiVideoManagerLogicImpl extends MultiVideoManagerLogic {
-  MultiVideoManagerLogicImpl({
+class VideosManagerLogic extends StateNotifier<List<VideoLink>>
+    implements VideosManagerLogicInterface {
+  VideosManagerLogic({
     required this.reader,
-  }) : super(state: const <VideoLink>[]) {
+  }) : super(const <VideoLink>[]) {
     _setupCurrentIndex();
     _fetchData();
   }
@@ -28,11 +26,8 @@ class MultiVideoManagerLogicImpl extends MultiVideoManagerLogic {
   late int _currentIndex;
   late StreamController<int> _indexController;
 
-  late VideoPlayerLogic _currentVideoLogic;
-  late VideoPlayerLogic _nextVideoLogic;
-
-  late VoidCallback _currentVideoListener;
-  late VoidCallback _nextVideoListener;
+  late VideoPlayerLogicInterface _currentVideoLogic;
+  late VideoPlayerLogicInterface _nextVideoLogic;
 
   late bool _isReadyToPlayCurrentVideo;
   late bool _isReadyToPlayNextVideo;
@@ -69,45 +64,41 @@ class MultiVideoManagerLogicImpl extends MultiVideoManagerLogic {
         !_isReadyToPlayNextVideo;
   }
 
-  VoidCallback _currentVideoCallback() {
-    return () {
-      if (mounted) {
-        if (_canPlayCurrentVideo) {
-          _isReadyToPlayCurrentVideo = true;
-          _currentVideoLogic.play();
-          _isOpenedOverlay(videoLink: _currentVideoLink).state = false;
-        }
+  void _currentVideoListener() {
+    if (mounted) {
+      if (_canPlayCurrentVideo) {
+        _isReadyToPlayCurrentVideo = true;
+        _currentVideoLogic.play();
+        _isOpenedOverlay(videoLink: _currentVideoLink).state = false;
+      }
 
-        if (_canResetCurrentVideo) {
-          _hasCompleteCurrentVideo = true;
-          _currentVideoLogic.reset();
-          _isOpenedOverlay(videoLink: _currentVideoLink).state = true;
+      if (_canResetCurrentVideo) {
+        _hasCompleteCurrentVideo = true;
+        _currentVideoLogic.reset();
+        _isOpenedOverlay(videoLink: _currentVideoLink).state = true;
 
-          if (!_isLastIndex) {
-            // Waits that the next video player is initialized
-            while (!_isReadyToPlayNextVideo) {
-              _nextVideoListener();
-              break;
-            }
+        if (!_isLastIndex) {
+          // Waits that the next video player is initialized
+          while (!_isReadyToPlayNextVideo) {
+            _nextVideoListener();
+            break;
           }
         }
       }
-    };
+    }
   }
 
-  VoidCallback _nextVideoCallback() {
-    return () {
-      if (mounted && _canPlayNextVideo) {
-        _isReadyToPlayNextVideo = true;
-        setupLogicsOnCurrentAndNextVideoPlayers();
-      }
-    };
+  void _nextVideoListener() {
+    if (mounted && _canPlayNextVideo) {
+      _isReadyToPlayNextVideo = true;
+      setupLogicsOnCurrentAndNextVideoPlayers();
+    }
   }
 
-  List<VideoLink> get _videoLinks => reader(videoLinksRef);
+  List<VideoLink> get _fakeVideoLinks => reader(fakeVideoLinksRef);
 
-  VideoPlayerLogic _videoLogic({required VideoLink videoLink}) {
-    return reader(videoPlayerRef(videoLink).notifier);
+  VideoPlayerLogicInterface _videoLogic({required VideoLink videoLink}) {
+    return reader(videoPlayerLogicRef(videoLink));
   }
 
   StateController<bool> _isOpenedOverlay({required VideoLink videoLink}) {
@@ -115,7 +106,7 @@ class MultiVideoManagerLogicImpl extends MultiVideoManagerLogic {
   }
 
   Future<void> _fetchData() async {
-    state = _videoLinks;
+    state = _fakeVideoLinks;
   }
 
   void _removePreviousListeners() {
@@ -141,17 +132,20 @@ class MultiVideoManagerLogicImpl extends MultiVideoManagerLogic {
   }
 
   void _addListeners() {
-    // The Call methods,  on listeners, allow to run again the notify of
+    // The Call methods, on listeners, allow to run again the notify of
     // the video player even when is in stable state without state change.
 
-    _currentVideoListener = _currentVideoCallback()..call();
+    _currentVideoListener();
     _currentVideoLogic.addVideoListener(_currentVideoListener);
 
     if (!_isLastIndex) {
-      _nextVideoListener = _nextVideoCallback()..call();
+      _nextVideoListener();
       _nextVideoLogic.addVideoListener(_nextVideoListener);
     }
   }
+
+  @override
+  StateNotifier<List<VideoLink>> get asStateNotifier => this;
 
   @override
   void setupLogicsOnCurrentAndNextVideoPlayers() {

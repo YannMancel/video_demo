@@ -20,7 +20,7 @@ class VideoPlayerWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final videoState = ref.watch(videoPlayerRef(videoLink));
+    final videoState = ref.watch(videoStateRef(videoLink));
 
     // TODO put AspectRatio here
     return ProviderScope(
@@ -44,14 +44,14 @@ class _VideoView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final videoLink = ref.watch(scopedVideoLink);
-    final logic = ref.watch(videoPlayerRef(videoLink).notifier);
+    final logic = ref.watch(videoPlayerLogicRef(videoLink));
 
     return AspectRatio(
       aspectRatio: logic.aspectRatio,
       child: Stack(
         alignment: Alignment.center,
         children: <Widget>[
-          VideoPlayer((logic as VideoPlayerLogicImpl).controller),
+          VideoPlayer(logic.controller),
           const _Overlay(),
         ],
       ),
@@ -339,10 +339,10 @@ class _VideoProgressIndicator extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final videoLink = ref.watch(scopedVideoLink);
-    final logic = ref.watch(videoPlayerRef(videoLink).notifier);
+    final logic = ref.watch(videoPlayerLogicRef(videoLink));
 
     return VideoProgressIndicator(
-      (logic as VideoPlayerLogicImpl).controller,
+      logic.controller,
       allowScrubbing: true,
     );
   }

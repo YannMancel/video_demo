@@ -2,16 +2,15 @@ import 'package:hooks_riverpod/hooks_riverpod.dart'
     show Reader, StateController;
 import 'package:video_demo/_features.dart';
 
-abstract class PlayPauseLogic {
+abstract class PlayPauseLogicInterface {
   static String get kName => 'PlayPauseLogic';
-
   double get initialState;
   void play();
   void pause();
 }
 
-class PlayPauseLogicImpl implements PlayPauseLogic {
-  const PlayPauseLogicImpl({
+class PlayPauseLogic implements PlayPauseLogicInterface {
+  const PlayPauseLogic({
     required this.reader,
     required this.videoLink,
   });
@@ -19,8 +18,8 @@ class PlayPauseLogicImpl implements PlayPauseLogic {
   final Reader reader;
   final VideoLink videoLink;
 
-  VideoPlayerLogic get _videoLogic {
-    return reader(videoPlayerRef(videoLink).notifier);
+  VideoPlayerLogicInterface get _videoLogic {
+    return reader(videoPlayerLogicRef(videoLink));
   }
 
   StateController<bool> get _isOpenedOverlay {
