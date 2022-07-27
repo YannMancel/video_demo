@@ -28,7 +28,7 @@ class HomePage extends HookConsumerWidget {
             .setupLogicsOnCurrentAndNextVideoPlayers();
       });
       return null;
-    }, const []);
+    }, const <Object?>[]);
 
     return Scaffold(
       appBar: AppBar(

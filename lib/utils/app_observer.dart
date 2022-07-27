@@ -2,17 +2,30 @@ import 'package:hooks_riverpod/hooks_riverpod.dart'
     show ProviderBase, ProviderContainer, ProviderObserver;
 import 'package:video_demo/_features.dart';
 
-enum ProviderEvent { add, update, fail, dispose }
+enum EventType {
+  add,
+  update,
+  fail,
+  dispose;
+
+  int get _lengthMax {
+    return EventType.values
+        .map((e) => e.name.length)
+        .reduce((a, b) => (a < b) ? b : a);
+  }
+
+  String get formattedName => name.toUpperCase().padRight(_lengthMax);
+}
 
 class AppObserver extends ProviderObserver {
   const AppObserver();
 
   String _eventMessage({
-    required ProviderEvent providerEvent,
+    required EventType eventType,
     required ProviderBase provider,
     Object? value,
   }) {
-    final event = providerEvent.name;
+    final event = eventType.formattedName;
     final name = provider.name ?? provider.runtimeType;
     final result = (value != null) ? '- $value' : '';
 
@@ -27,7 +40,7 @@ class AppObserver extends ProviderObserver {
   ) {
     Logger.debug(
       message: _eventMessage(
-        providerEvent: ProviderEvent.add,
+        eventType: EventType.add,
         provider: provider,
         value: value,
       ),
@@ -43,7 +56,7 @@ class AppObserver extends ProviderObserver {
   ) {
     Logger.info(
       message: _eventMessage(
-        providerEvent: ProviderEvent.update,
+        eventType: EventType.update,
         provider: provider,
         value: newValue,
       ),
@@ -59,7 +72,7 @@ class AppObserver extends ProviderObserver {
   ) {
     Logger.warning(
       message: _eventMessage(
-        providerEvent: ProviderEvent.fail,
+        eventType: EventType.fail,
         provider: provider,
       ),
     );
@@ -72,7 +85,7 @@ class AppObserver extends ProviderObserver {
   ) {
     Logger.wtf(
       message: _eventMessage(
-        providerEvent: ProviderEvent.dispose,
+        eventType: EventType.dispose,
         provider: provider,
       ),
     );

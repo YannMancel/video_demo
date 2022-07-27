@@ -217,7 +217,7 @@ abstract class _Network implements VideoLink {
   const factory _Network({required final String videoPath}) = _$_Network;
 
   @override
-  String get videoPath => throw _privateConstructorUsedError;
+  String get videoPath;
   @override
   @JsonKey(ignore: true)
   _$$_NetworkCopyWith<_$_Network> get copyWith =>
@@ -351,7 +351,7 @@ abstract class _Asset implements VideoLink {
   const factory _Asset({required final String videoPath}) = _$_Asset;
 
   @override
-  String get videoPath => throw _privateConstructorUsedError;
+  String get videoPath;
   @override
   @JsonKey(ignore: true)
   _$$_AssetCopyWith<_$_Asset> get copyWith =>
